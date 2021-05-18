@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- Created By CodingNepal -->
+<html lang="en" dir="ltr">
+   <head>
+       <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/account.css') }}">
+       <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/loader.css') }}">
+       <link rel="shortcut icon" href="{{ url_for('static', filename='img/user.png') }}">
+      <meta charset="utf-8">
+      <title>Screen Loader | CodingNepal</title>
+      <link rel="stylesheet" href="style.css">
+   </head>
+   <body>
+      <div class="loader">
+         <div class="ring"></div>
+      </div>
+      <div class="content">
+         <div class="image"></div>
+         <div class="text">
+           <!DOCTYPE html>
+<!-- Created By CodingLab - www.codinglabweb.com -->
+<html lang="en" dir="ltr">
+
+  <head>
+    <script
+      src="https://kit.fontawesome.com/64d58efce2.js"
+      crossorigin="anonymous"
+    ></script>
+    <meta charset="UTF-8">
+    <!---<title> Responsive Registration Form | CodingLab </title>--->
+
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+  <div class="container">
+    <i class="fas fa-user-circle"></i>
+    <div class="title">Account Details</div>
+    <div class="titles"></div>
+    <div class="content">
+      <form action="#" method="POST">
+        <div class="user-details">
+
+          <div class="input-box">
+            <span class="details">Username</span>
+            <input type="text" placeholder="{{ username }}" readonly>
+          </div>
+          <div class="input-box">
+            <span class="details">Email</span>
+            <input type="text" placeholder="{{ email }}" readonly>
+          </div>
+
+          <div class="input-box">
+            <span class="details">New Password</span>
+            <input type="password" placeholder="New Password" name="pass">
+          </div>
+
+          <div class="input-box">
+            <span class="details">Confirm new Password</span>
+            <input type="password" placeholder="Confirm your password" class="color" name="c_pass">
+          </div>
+            <div class="input-box">
+            <span class="details">Old Password</span>
+            <input type="password" placeholder="Old Password" name="o_pass">  
+          </div>
+            <div class="input-box">
+            <span class="details">Profile Pic</span>
+            <input type="submit" placeholder="New Password" name="Pic" style="text-align: center;" value="Upload File">
+          </div>
+        </div>
+
+        <div class="button">
+          <input type="submit" value="Save">
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
+      </div>
+      <script>
+         const loader = document.querySelector(".loader");
+         window.onload = function(){
+           setTimeout(function(){
+             loader.style.opacity = "0";
+             setTimeout(function(){
+               loader.style.display = "none";
+             }, 500);
+           },1500);
+         }
+
+      </script>
+      </div>
+   </body>
+
+</html>
+
+
+
+
+
