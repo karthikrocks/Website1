@@ -1,4 +1,4 @@
-import codecs
+from werkzeug.utils import header_property
 from db import my_database
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import timedelta
@@ -6,7 +6,7 @@ from datetime import timedelta
 app = Flask(__name__)
 app.secret_key = open("keys/key.key", "rb").read()
 app.permanent_session_lifetime = timedelta(hours=24)
-
+# app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
 
 def emailValid():
     email = request.form['em']
