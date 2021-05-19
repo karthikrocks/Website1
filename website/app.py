@@ -1,7 +1,5 @@
 from db import my_database
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
-from werkzeug.utils import secure_filename
-
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import timedelta
 
 app = Flask(__name__)
@@ -43,7 +41,6 @@ def main_register():
             flash("This User already exists. Please login or sign up as a new user.")
             session.pop("name")
             return redirect(url_for("main_register"))
-            # flash("hi", "info")
         if int(len(username)) != 0:
             if int(len(email)) != 0:
                 if int(len(password)) != 0:

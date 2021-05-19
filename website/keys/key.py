@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 
+
 class Encryptor():
 
     def key_create(self):
@@ -16,36 +17,10 @@ class Encryptor():
         return key
 
 
-    def file_encrypt(self, key, original_file, encrypted_file):
-        
-        f = Fernet(key)
+encryptor = Encryptor()
 
-        with open(original_file, 'rb') as file:
-            original = file.read()
+mykey = encryptor.key_create()
 
-        encrypted = f.encrypt(original)
+loaded_key = encryptor.key_load(str('keys/key.key'))
 
-        with open (encrypted_file, 'wb') as file:
-            file.write(encrypted)
-
-    def file_decrypt(self, key, encrypted_file, decrypted_file):
-        
-        f = Fernet(key)
-
-        with open(encrypted_file, 'rb') as file:
-            encrypted = file.read()
-
-        decrypted = f.decrypt(encrypted)
-
-        with open(decrypted_file, 'wb') as file:
-            file.write(decrypted)
-
-
-
-encryptor=Encryptor()
-
-mykey=encryptor.key_create()
-
-loaded_key=encryptor.key_load(str('keys/key.key'))
-
-print(loaded_key)
+print(f"This is my Key", {loaded_key})
