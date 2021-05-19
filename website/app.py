@@ -1,26 +1,23 @@
-import mysql.connector
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from db import my_database
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+from werkzeug.utils import secure_filename
 
 from datetime import timedelta
 
 app = Flask(__name__)
-app.secret_key = open("keys/my_key.key", "rb").read()
+app.secret_key = open("keys/key.key", "rb").read()
 app.permanent_session_lifetime = timedelta(hours=24)
 
 
 def emailValid():
-    my_db = mysql.connector.connect(
-        host="localhost", user="root", passwd="karthi@0709", database="KarthikDB")
     email = request.form['em']
-
-    my_cursor = my_db.cursor(buffered=True)
-
+    curser = my_database.cursor(buffered=True)
     sql_code = "SELECT * FROM karthikdb.sign_up_info where email=%(email)s"
 
-    result = my_cursor.execute(sql_code, {'email': email})
-    cnt = my_cursor.rowcount
-    my_cursor.close()
-    my_db.close()
+    result = curser.execute(sql_code, {'email': email})
+    cnt = curser.rowcount
+    curser.close()
+    my_database.close()
     return cnt == 0
 
 
@@ -40,6 +37,7 @@ def main_register():
     password = request.form['pa']
     session["name"] = username
     session["email"] = email
+    curser = my_database.cursor()
     if request.method == 'POST':
         if not emailValid():
             flash("This User already exists. Please login or sign up as a new user.")
@@ -49,10 +47,6 @@ def main_register():
         if int(len(username)) != 0:
             if int(len(email)) != 0:
                 if int(len(password)) != 0:
-                    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                                          database="karthikDB")
-                    curser = my_database.cursor()
-
                     sql_form = "Insert into sign_up_info(username, email, passwd) values(%s, %s, %s)"
                     user_ADD = [(username, email, password)]
 
@@ -71,26 +65,21 @@ def login():
     if "name" in session:
         name = session["name"]
         return redirect(url_for("home"))
-    my_db = mysql.connector.connect(
-        host="localhost", user="root", passwd="karthi@0709", database="KarthikDB")
     session.permanent = True
-    # my_curser = my_db.cursor()
     name = request.form["username"]
-    # email = request.form['em']
     pwd = request.form["passwd"]
-    my_cursor = my_db.cursor(buffered=True)
-
+    curser = my_database.cursor(buffered=True)
     sql_code = "SELECT * FROM karthikdb.sign_up_info where username=%(user_name)s and passwd=%(password)s"
-    result = my_cursor.execute(sql_code, {'user_name': name, 'password': pwd})
+    result = curser.execute(sql_code, {'user_name': name, 'password': pwd})
 
-    cnt = my_cursor.rowcount
+    cnt = curser.rowcount
     email = ""
     if cnt > 0:
-        res = my_cursor.fetchone()
+        res = curser.fetchone()
         email = res[2]
 
-    my_cursor.close()
-    my_db.close()
+    curser.close()
+    my_database.close()
 
     if cnt > 0:
 
@@ -142,17 +131,14 @@ def add_header(r):
 
 @app.route('/details', methods=['POST', 'GET'])
 def account():
-    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                          database="karthikDB")
-    curser = my_database.cursor()
     if request.method == 'POST':
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
         session["passw"] = passwd
-        
         if len(passwd) != 0 and len(c_passwd) != 0 and len(request.form["o_pass"]) != 0:
             if passwd == c_passwd:
                 if request.form["o_pass"] == session["pwd"]:
+                    curser = my_database.cursor()
                     query = "UPDATE karthikdb.sign_up_info SET passwd=%(passwd)s WHERE email=%(email)s"
 
                     curser.execute(
@@ -167,7 +153,7 @@ def account():
         if request.form["o_pass"] != session["pwd"]:
             flash("Old Password Incorrect")
             return redirect(url_for("home"))
-        
+
     if "name" in session:
         return render_template("account.html", username=session["name"], email=session["email"])
     else:
