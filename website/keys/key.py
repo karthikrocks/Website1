@@ -23,4 +23,4 @@ mykey = encryptor.key_create()
 
 loaded_key = encryptor.key_load(str('keys/key.key'))
 
-print(f"This is my Key", {loaded_key})
+print(f"This is my Key: ", {loaded_key})
