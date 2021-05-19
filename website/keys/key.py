@@ -46,8 +46,6 @@ encryptor=Encryptor()
 
 mykey=encryptor.key_create()
 
-encryptor.key_write(mykey, 'key.key')
-
-loaded_key=encryptor.key_load('key.key')
+loaded_key=encryptor.key_load(str('keys/key.key'))
 
 print(loaded_key)
