@@ -1,5 +1,5 @@
 from werkzeug.utils import header_property
-from db import my_database
+from db import my_database, db
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import timedelta
 

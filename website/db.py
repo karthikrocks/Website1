@@ -7,10 +7,8 @@ curser = my_database.cursor()
 
 class DB():
     def getAccount(self, email):
-
         sql = "SELECT * FROM karthikdb.sign_up_info WHERE email='" + email + "'"
         curser.execute(sql)
-
         myresult = curser.fetchall()
 
         for x in myresult:
