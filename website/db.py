@@ -5,18 +5,21 @@ my_database = mysql.connector.connect(host="localhost", user="root", passwd="kar
 curser = my_database.cursor()
 
 
-def getAccount(email):
+class DB():
+    def getAccount(self, email):
 
-    sql = "SELECT * FROM karthikdb.sign_up_info WHERE email='" + email + "'"
-    curser.execute(sql)
+        sql = "SELECT * FROM karthikdb.sign_up_info WHERE email='" + email + "'"
+        curser.execute(sql)
 
-    myresult = curser.fetchall()
+        myresult = curser.fetchall()
 
-    for x in myresult:
-        print("Id: ", x[0])
-        print("username: ", x[1])
-        print("email: ", x[2])
-        print("passwd: ", x[3])
+        for x in myresult:
+            print("Id: ", x[0])
+            print("username: ", x[1])
+            print("email: ", x[2])
+            print("passwd: ", x[3])
 
 
-print(getAccount("rishi.teja@gmail.com"))
+db = DB()
+# Driver Code....
+# db.getAccount("rishi.teja@gmail.com")
