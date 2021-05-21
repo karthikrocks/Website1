@@ -1,14 +1,17 @@
-from werkzeug.utils import header_property
-from db import my_database, db
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import timedelta
-
+from db import db
+from keys.key import encryptor
+import mysql.connector
 app = Flask(__name__)
-app.secret_key = open("keys/key.key", "rb").read()
+key = encryptor.key_load(str('keys/key.key'))
+app.secret_key = key
 app.permanent_session_lifetime = timedelta(hours=24)
-# app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
 
 def emailValid():
+    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                      database="karthikDB")
     email = request.form['em']
     curser = my_database.cursor(buffered=True)
     sql_code = "SELECT * FROM karthikdb.sign_up_info where email=%(email)s"
@@ -31,13 +34,19 @@ def index():
 
 @app.route('/login-register', methods=['POST'])
 def main_register():
+    
     username = request.form['u']
     email = request.form['em']
     password = request.form['pa']
+    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                      database="karthikDB")
     session["name"] = username
     session["email"] = email
+    
     curser = my_database.cursor()
+    
     if request.method == 'POST':
+        
         if not emailValid():
             flash("This User already exists. Please login or sign up as a new user.")
             session.pop("name")
@@ -63,6 +72,8 @@ def login():
     if "name" in session:
         name = session["name"]
         return redirect(url_for("home"))
+    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                      database="karthikDB")
     session.permanent = True
     name = request.form["username"]
     pwd = request.form["passwd"]
@@ -130,6 +141,8 @@ def add_header(r):
 @app.route('/details', methods=['POST', 'GET'])
 def account():
     if request.method == 'POST':
+        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                      database="karthikDB")
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
         session["passw"] = passwd
