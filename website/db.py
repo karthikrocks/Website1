@@ -17,7 +17,13 @@ class DB():
             print("email: ", x[2])
             print("passwd: ", x[3])
 
+    def getEmail(self, userId):
+        sql = "SELECT email FROM karthikdb.sign_up_info WHERE userId='" + userId + "'"
+        curser.execute(sql)
+        result = curser.fetchall()
+        print(result[0])
 
 db = DB()
 # Driver Code....
 # db.getAccount("rishi.teja@gmail.com")
+# db.getEmail("1")
