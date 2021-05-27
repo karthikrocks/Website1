@@ -22,8 +22,19 @@ class DB():
         curser.execute(sql)
         result = curser.fetchall()
         print(result[0])
-
+    def AddUser(self, name, email, password):
+        sql = "Insert into sign_up_info(username, email, passwd) values(%(name)s, %(email)s, %(password)s)"
+        curser.execute(sql, {"name": name, "email": email, "password": password})
+        my_database.commit()
+        print("User added!")
+    def DeleteUser(self, userId):
+        sql = "DELETE FROM sign_up_info WHERE userId=%(userId)s"
+        curser.execute(sql, {"userId": userId})
+        my_database.commit()
+        print("User deleted!")
 db = DB()
 # Driver Code....
 # db.getAccount("rishi.teja@gmail.com")
 # db.getEmail("1")
+# db.AddUser("name", "test", "1234")
+# db.DeleteUser(13)

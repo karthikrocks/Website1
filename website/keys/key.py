@@ -21,5 +21,4 @@ encryptor = Encryptor()
 loaded_key = encryptor.key_load(str('keys/key.key'))
 # Driver Code..
 # mykey = encryptor.key_create()
-
 # print(f"This is my Key: ", {loaded_key})
