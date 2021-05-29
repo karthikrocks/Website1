@@ -38,6 +38,18 @@
     <title>Sign in & Sign up Form</title>
   </head>
   <body>
+    <div class="wrapper">
+      <div class="toast">
+        <div class="content">
+          <div class="icon"><i class="uil uil-wifi"></i></div>
+          <div class="details">
+            <span>You're online now</span>
+            <p>Hurray! Internet is connected.</p>
+          </div>
+        </div>
+        <div class="close-icon"><i class="uil uil-times"></i></div>
+      </div>
+    </div>
     <div class="container">
       <div class="forms-container">
         <div class="signin-signup">
@@ -121,5 +133,6 @@ sign_up_btn.addEventListener("click", () => {
 sign_in_btn.addEventListener("click", () => {
   container.classList.remove("sign-up-mode");
 });
+
 
 </script>
