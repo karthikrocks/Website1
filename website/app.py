@@ -42,6 +42,7 @@ def main_register():
                                       database="karthikDB")
     session["name"] = username
     session["email"] = email
+    session["password"] = password
     
     curser = my_database.cursor()
     
@@ -54,12 +55,7 @@ def main_register():
         if int(len(username)) != 0:
             if int(len(email)) != 0:
                 if int(len(password)) != 0:
-                    sql_form = "Insert into sign_up_info(username, email, passwd) values(%s, %s, %s)"
-                    user_ADD = [(username, email, password)]
-
-                    curser.executemany(sql_form, user_ADD)
-                    my_database.commit()
-
+                    db.AddUser(username, email, password)
                     my_database.close()
                     flash("Sign Up Successful!")
                     return render_template('home.html', name=session["name"])
@@ -91,7 +87,7 @@ def login():
     my_database.close()
 
     if cnt > 0:
-
+        session["logged_in"] = True
         session["email"] = email
         session["name"] = name
         session["pwd"] = pwd
@@ -148,22 +144,24 @@ def account():
         session["passw"] = passwd
         if len(passwd) != 0 and len(c_passwd) != 0 and len(request.form["o_pass"]) != 0:
             if passwd == c_passwd:
-                if request.form["o_pass"] == session["pwd"]:
-                    curser = my_database.cursor()
-                    query = "UPDATE karthikdb.sign_up_info SET passwd=%(passwd)s WHERE email=%(email)s"
-
-                    curser.execute(
-                        query, {'passwd': session["passw"], 'email': session["email"]})
-                    session["pwd"] = session["passw"]
-                    my_database.commit()
-                    flash("Password Saved")
-                    return redirect(url_for("home"))
+                if "logged_in" in session:
+                    if request.form["o_pass"] == session["pwd"]:
+                        db.ChangePassword(session["passw"], session["email"])
+                        session["pwd"] = session["passw"]
+                        flash("Password Saved")
+                        return redirect(url_for("home"))
+                else:
+                    if request.form["o_pass"] == session["password"]:
+                        db.ChangePassword(session["password"], session["email"])
+                        session["password"] = session["passw"]
+                        flash("Password Saved")
+                        return redirect(url_for("home"))
         if passwd != c_passwd:
             flash("Password not matching")
             return redirect(url_for("home"))
         if request.form["o_pass"] != session["pwd"]:
             flash("Old Password Incorrect")
-            return redirect(url_for("home"))
+            return redirect(url_for("home"))            
 
     if "name" in session:
         return render_template("account.html", username=session["name"], email=session["email"])

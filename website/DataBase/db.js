@@ -4,7 +4,7 @@ var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "karthi@0709",
-  database: "jsdb"
+  database: "karthikDB"
 });
 class db {
   constructor(name, email, password) {
