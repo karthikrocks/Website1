@@ -40,6 +40,14 @@ class DB():
         curser.execute(sql, {"email": email, "passwd": password})
         my_database.commit()
         print("User changed")
+    def GetPassword(self, email):
+        sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
+        curser.execute(sql, {"email": email})
+        myresult = curser.fetchall()
+        for x in myresult:
+            password = x[3]
+        return password
+
 
 
 db = DB()

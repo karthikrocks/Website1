@@ -137,20 +137,12 @@ def add_header(r):
 @app.route('/details', methods=['POST', 'GET'])
 def account():
     if request.method == 'POST':
-        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                      database="karthikDB")
-        cursor = my_database.cursor()
-        sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
-        cursor.execute(sql, {"email": session["email"]})
-        myresult = cursor.fetchall()
-        for x in myresult:
-            password = x[3]
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
-        session["passw"] = passwd
+        session["passw"] = passwd   
         if len(passwd) != 0 and len(c_passwd) != 0 and len(request.form["o_pass"]) != 0:
             if passwd == c_passwd:
-                if request.form["o_pass"] == password:
+                if request.form["o_pass"] == db.GetPassword(session["email"]):
                     db.ChangePassword(session["passw"], session["email"])
                     session["pwd"] = session["passw"]
                     flash("Password Saved")
@@ -158,7 +150,7 @@ def account():
         if passwd != c_passwd:
             flash("Password not matching")
             return redirect(url_for("home"))
-        if request.form["o_pass"] != session["pwd"]:
+        if request.form["o_pass"] != db.GetPassword(session["email"]):
             flash("Old Password Incorrect")
             return redirect(url_for("home"))            
 
