@@ -64,4 +64,4 @@ db = DB()
 # Driver Code....
 # db.getAccount()
 # db.AddUser("karthik", "karthik@kar", "1123")
-db.DeleteUser("karthik@kar")
+# db.DeleteUser("karthik@kar")
