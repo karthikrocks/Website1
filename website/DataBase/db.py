@@ -4,6 +4,16 @@ my_database = mysql.connector.connect(host="localhost", user="root", passwd="kar
                                       database="karthikDB")
 curser = my_database.cursor()
 
+"""
+[] = database -> connection - host-*****8=*72, user-**Jwuw8#6, password-***** (
+    getaccount -[email] = gets account 
+    AddUser -[name, email, passwd] - adds a user
+    DeleteUser -[email] - deletes a user
+    ChangePassword -[email] - changes password
+    GetPassword -[email] - gets password from the database
+)
+
+"""
 
 class DB():
     # def __init__(self, name, email, password):
@@ -53,5 +63,5 @@ class DB():
 db = DB()
 # Driver Code....
 # db.getAccount()
-# db.AddUser()
-# db.DeleteUser()
+# db.AddUser("karthik", "karthik@kar", "1123")
+db.DeleteUser("karthik@kar")
