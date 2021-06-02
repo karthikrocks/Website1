@@ -149,7 +149,7 @@ def account():
                     session["pwd"] = session["passw"]
                     flash("Password Saved")
                     return redirect(url_for("home"))
-        if request.form["o_pass"] != password:
+        if old_passwd != password:
             flash("Old Password Incorrect")
             return redirect(url_for("home"))
 
