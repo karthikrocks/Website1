@@ -5,15 +5,19 @@ my_database = mysql.connector.connect(host="localhost", user="root", passwd="kar
 curser = my_database.cursor(buffered=True)
 
 """
-[] = database -> connection - host-*****8=*72, user-**Jwuw8#6, password-***** (
-    getaccount -[email] = gets account 
-    AddUser -[name, email, passwd] - adds a user
+
+[] = database -> connection - host-"localhost", user-"root", password-***** (
+    getaccount -[email] = gets account from the database
+    AddUser -[name, email, passwd] - adds a user to the database
     DeleteUser -[email] - deletes a user
     ChangePassword -[email] - changes password
     GetPassword -[email] - gets password from the database
+    AccountValid -[email] - checks if the user exists in the database
 )
 
 """
+
+
 def accountValid(email):
     sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
     result = curser.execute(sql, {"email": email})
@@ -23,12 +27,12 @@ def accountValid(email):
     else:
         return False
 
+
 class DB():
     # def __init__(self, name, email, password):
     #     self.name = name
     #     self.email = email
     #     self.password = password
-    
 
     def getAccount(self, email):
         if accountValid(email):
@@ -43,6 +47,7 @@ class DB():
                 print("passwd: ", x[3])
         else:
             print("Account not valid!")
+
     def AddUser(self, name, email, password):
         sql = "Insert into sign_up_info(username, email, passwd) values(%(name)s, %(email)s, %(password)s)"
         curser.execute(
@@ -58,6 +63,7 @@ class DB():
             print("User deleted!")
         else:
             print("Account not valid!")
+
     def ChangePassword(self, email, password):
         if accountValid(email):
             sql = "UPDATE karthikdb.sign_up_info SET passwd=%(passwd)s WHERE email=%(email)s"
@@ -66,6 +72,7 @@ class DB():
             print("User changed")
         else:
             print("Account not valid!")
+
     def GetPassword(self, email):
         if accountValid(email):
             sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
@@ -76,7 +83,6 @@ class DB():
             return password
         else:
             print("Account not valid!")
-
 
 
 db = DB()

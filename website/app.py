@@ -9,6 +9,7 @@ key = encryptor.key_load(str('keys/key.key'))
 app.secret_key = key
 app.permanent_session_lifetime = timedelta(hours=24)
 
+
 def emailValid():
     my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
                                           database="karthikDB")
@@ -139,17 +140,16 @@ def account():
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
         session["passw"] = passwd
-        if len(passwd) != 0 and len(c_passwd) != 0 and len(request.form["o_pass"]) != 0:
+        old_passwd = request.form["o_pass"]
+        password = db.GetPassword(session["email"])
+        if len(passwd) != 0 and len(c_passwd) != 0 and len(old_passwd) != 0:
             if passwd == c_passwd:
-                if request.form["o_pass"] == db.GetPassword(session["email"]):
-                    db.ChangePassword(session["passw"], session["email"])
+                if old_passwd == password:
+                    db.ChangePassword(session["email"], session["passw"])
                     session["pwd"] = session["passw"]
                     flash("Password Saved")
                     return redirect(url_for("home"))
-        if passwd != c_passwd:
-            flash("Password not matching")
-            return redirect(url_for("home"))
-        if request.form["o_pass"] != db.GetPassword(session["email"]):
+        if request.form["o_pass"] != password:
             flash("Old Password Incorrect")
             return redirect(url_for("home"))
 
