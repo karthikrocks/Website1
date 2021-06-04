@@ -166,5 +166,27 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.route('/setup', methods=['GET', 'POST'])
+def setup():
+
+    if request.method == 'POST':
+        q_1 = request.form["q_1"]
+        a_1 = request.form["a_1"]
+        q_2 = request.form["q_2"]
+        a_2 = request.form["a_2"]
+        q_3 = request.form["q_3"]
+        q_3 = request.form["a_3"]
+        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                          database="karthikDB")
+        curser = my_database.cursor()
+        sql1 = "Insert into question(Question) values(%(question)s)"
+        curser.execute(sql1, {"question": q_1})
+        curser.execute(sql1, {"question": q_2})
+        curser.execute(sql1, {"question": q_3})
+        sql2 = "Insert into user_question_map(userId, Question_id, Answer) values(%(userId)s, %(Question_id)s, %(Answer)s)"
+        UserId = db.GetUserId('rishist@gmail.com')
+        Question_id = db.GetQuestionId(q_1)
+        curser.execute(sql1, {"userId": UserId, "Question_id": Question_id, "Answer": a_1})
+    return render_template('q-a.html')
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')
