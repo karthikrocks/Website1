@@ -85,14 +85,14 @@ class DB():
             print("Account not valid!")
 
     def GetQuestionId(self, question):
-        sql = "SELECT Question_id FROM question where Question=%(question)s"
+        sql = "SELECT Question_id FROM karthikdb.question where Question=%(question)s"
         curser.execute(sql, {"question": question})
         result = curser.fetchall()
         for x in result:
             question_id = x[0]
         return question_id
     def GetUserId(self, email):
-        sql = "SELECT user_Id FROM sign_up_info where email=%(email)s"
+        sql = "SELECT user_Id FROM karthikdb.sign_up_info where email=%(email)s"
         curser.execute(sql, {"email": email})
         result = curser.fetchall()
         for x in result:
