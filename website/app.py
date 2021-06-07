@@ -168,10 +168,14 @@ def page_not_found(e):
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
+    if "name" in session:
+        flash("Please Signup to setup your account!")
+        return redirect(url_for("main_register"))
     if request.method == 'POST':
         a_1 = request.form["a_1"]
         a_2 = request.form["a_2"]
         a_3 = request.form["a_3"]
+        a_4 = request.form["a_4"]
         
         
         my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
@@ -179,13 +183,14 @@ def setup():
         curser = my_database.cursor()
         
         
+        if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0 and len(a_4) != 0:
+            db.AddAnswer(a_1, session["email"], "What is your Date of Birth?") 
+            db.AddAnswer(a_2, session["email"], "What is your fathers name?")
+            db.AddAnswer(a_3, session["email"], "What's your mothers name?")
+            db.AddAnswer(a_4, session["email"], "What's your School name?")
+            flash("Successfully Created your account!")
+            return redirect(url_for("home"))
 
-        db.AddAnswer(a_1, session["email"], "What is your Date of Birth?") 
-        db.AddAnswer(a_2, session["email"], "What is your fathers name?")
-        db.AddAnswer(a_3, session["email"], "What's your mothers name?")
-        flash("Successfully Created your account!")
-        return redirect(url_for("home"))
-
-    return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?")
+    return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')
