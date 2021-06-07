@@ -39,31 +39,28 @@ div {
 }
 </style>
 <body>
-
+<h1>Please enter your answers so you can complete your setup.</h1>
 <div>
     <form method="POST">
-        <i class="fas fa-question"></i>
-    <label for="fname">Question 1</label>
-    <input type="text" id="fname" name="q_1" placeholder="Question 1">
+    <input type="text" id="fname" name="q_1" placeholder="{{q_1}}" readonly>
 
     <i class="fas fa-poll-h"></i>
     <label for="lname">Answer 1</label>
     <input type="text" id="lname" name="a_1" placeholder="Answer 1">
 
-    <i class="fas fa-question"></i>
-    <label for="fname">Question 1</label>
-    <input type="text" id="fname" name="q_2" placeholder="Question 2">
+
+    <input type="text" id="fname" name="q_1" placeholder="{{q_2}}" readonly>
 
     <i class="fas fa-poll-h"></i>
-    <label for="fname">Answer 1</label>
+    <label for="fname">Answer 2</label>
     <input type="text" id="fname" name="a_2" placeholder="Answer 2">
 
-    <i class="fas fa-question"></i>
-    <label for="fname">Question 1</label>
-    <input type="text" id="fname" name="q_3" placeholder="Question 3">
+
+    <input type="text" id="fname" name="q_1" placeholder="{{q_3}}" readonly>
+
 
     <i class="fas fa-poll-h"></i>
-    <label for="fname">Answer 1</label>
+    <label for="fname">Answer 3</label>
     <input type="text" id="fname" name="a_3" placeholder="Answer 3">
   
     <input type="submit" value="Submit">

@@ -59,7 +59,7 @@ def main_register():
                     db.AddUser(username, email, password)
                     my_database.close()
                     flash("Sign Up Successful!")
-                    return render_template('home.html', name=session["name"])
+                    return render_template('my_home.html', name=session["name"])
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
 
@@ -168,27 +168,24 @@ def page_not_found(e):
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
-
     if request.method == 'POST':
-        q_1 = request.form["q_1"]
         a_1 = request.form["a_1"]
-        q_2 = request.form["q_2"]
         a_2 = request.form["a_2"]
-        q_3 = request.form["q_3"]
-        q_3 = request.form["a_3"]
+        a_3 = request.form["a_3"]
+        
+        
         my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
                                           database="karthikDB")
         curser = my_database.cursor()
-        sql1 = "Insert into karthikdb.user_question_map(Question) values(%(question)s)"
-        curser.execute(sql1, {"question": q_1})
-        curser.execute(sql1, {"question": q_2})
-        curser.execute(sql1, {"question": q_3})
-        my_database.commit()
-        sql2 = "Insert into karthikdb.user_question_map(userId, Question_id, Answer) values(%(userId)s, %(Question_id)s, %(Answer)s)"
-        UserId = db.GetUserId('rishist@gmail.com')
-        Question_id = db.GetQuestionId(q_1)
-        curser.execute(sql1, {"userId": UserId, "Question_id": Question_id, "Answer": a_1})
-        my_database.commit()
-    return render_template('q-a.html')
+        
+        
+
+        db.AddAnswer(a_1, session["email"], "What is your Date of Birth?") 
+        db.AddAnswer(a_2, session["email"], "What is your fathers name?")
+        db.AddAnswer(a_3, session["email"], "What's your mothers name?")
+        flash("Successfully Created your account!")
+        return redirect(url_for("home"))
+
+    return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?")
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')

@@ -85,6 +85,7 @@ class DB():
             print("Account not valid!")
 
     def GetQuestionId(self, question):
+        question_id = 0
         sql = "SELECT Question_id FROM karthikdb.question where Question=%(question)s"
         curser.execute(sql, {"question": question})
         result = curser.fetchall()
@@ -92,12 +93,27 @@ class DB():
             question_id = x[0]
         return question_id
     def GetUserId(self, email):
-        sql = "SELECT user_Id FROM karthikdb.sign_up_info where email=%(email)s"
+        userID = 0
+        sql = "SELECT userId FROM karthikdb.sign_up_info where email=%(email)s"
         curser.execute(sql, {"email": email})
         result = curser.fetchall()
         for x in result:
-            UserId = x[0]
-        return UserId
+            userID = x[0]
+        return userID
+    def AddAnswer(self, answer, email, question):
+        sql1 = "Insert into karthikdb.user_question_map(userId, Question_id, Answer) values(%(userId)s, %(Question_id)s, %(Answer)s)"
+        UserId = db.GetUserId(email)
+        Question_id = db.GetQuestionId(question)
+        curser.execute(sql1, {"userId": UserId, "Question_id": Question_id, "Answer": answer})
+        my_database.commit()
+    def GetQuestion(self, id):
+        sql = "SELECT Question FROM karthikdb.question where Question_id=%(Question_id)s"
+        curser.execute(sql, {"Question_id": id})
+        result = curser.fetchall()
+        for x in result:
+            r = x
+        return str(r)
+
 db = DB()
 # # Driver Code....
 # db.getAccount("test@test.com")
@@ -105,3 +121,6 @@ db = DB()
 # db.DeleteUser("karthik@kar")
 # db.GetPassword("test@test.com")
 # db.ChangePassword("test@test.com", "test")
+# db.AddAnswer("dwedewd", "test@test.com", "dwefer")    
+# db.GetQuestions(61)
+db.GetQuestionId("What is your Date of Birth?")
