@@ -168,7 +168,7 @@ def page_not_found(e):
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
-    if "name" in session:
+    if "name" not in session:
         flash("Please Signup to setup your account!")
         return redirect(url_for("main_register"))
     if request.method == 'POST':
