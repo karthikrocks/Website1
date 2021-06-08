@@ -114,6 +114,42 @@ class DB():
             r = x
         return str(r)
 
+    def GetAnswer1(self, userid):
+        re = ""
+        sql = "SELECT Answer FROM karthikdb.user_question_map where userId=%(userId)s and Question_id=%(question_id)s"
+        curser.execute(sql, {"userId": id, "question_id": '61'})
+        result = curser.fetchall()
+        for x in result:
+            re = x
+        return re
+    
+    def GetAnswer2(self, userid):
+        re = ""
+        sql = "SELECT Answer FROM karthikdb.user_question_map where userId=%(userId)s and Question_id=%(question_id)s"
+        curser.execute(sql, {"userId": id, "question_id": '62'})
+        result = curser.fetchall()
+        for x in result:
+            re = x
+        return re
+    
+    def GetAnswer3(self, userid):
+        re = ""
+        sql = "SELECT Answer FROM karthikdb.user_question_map where userId=%(userId)s and Question_id=%(question_id)s"
+        curser.execute(sql, {"userId": id, "question_id": '63'})
+        result = curser.fetchall()
+        for x in result:
+            re = x
+        return re
+
+    def GetAnswer4(self, userid):
+        re = ""
+        sql = "SELECT Answer FROM karthikdb.user_question_map where userId=%(userId)s and Question_id=%(question_id)s"
+        curser.execute(sql, {"userId": id, "question_id": '64'})
+        result = curser.fetchall()
+        for x in result:
+            re = x
+        return re
+
 db = DB()
 # # Driver Code....
 # db.getAccount("test@test.com")
@@ -124,3 +160,4 @@ db = DB()
 # db.AddAnswer("dwedewd", "test@test.com", "dwefer")    
 # db.GetQuestions(61)
 # db.GetQuestionId("What is your Date of Birth?")
+# db.GetAnswer1('2')

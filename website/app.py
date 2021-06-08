@@ -59,7 +59,7 @@ def main_register():
                     db.AddUser(username, email, password)
                     my_database.close()
                     flash("Sign Up Successful!")
-                    return render_template('my_home.html', name=session["name"])
+                    return redirect(url_for("setup"))
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
 
@@ -192,5 +192,17 @@ def setup():
             return redirect(url_for("home"))
 
     return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if method == "POST":
+        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                          database="karthikDB")
+        curser = my_database.cursor()
+        a_1 = request.form["a_1"]
+        a_2 = request.form["a_2"]
+        a_3 = request.form["a_3"]
+        UserID = db.GetUserId(session["email"])
+        
+
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')
