@@ -67,8 +67,8 @@
 <li><a href="#">About</a></li>
         <i class="fas fa-code"></i>
 <li><a href="#">Algorithms</a></li>
-<i class="fas fa-sign-out-alt"></i>
-<li><a href="/logout">Logout</a></li>
+
+
 
 
     <li><a></a></li>
@@ -79,12 +79,19 @@
 
 
     <i class="fas fa-user-lock"></i>
-        <li><a href="/details">{{ name }}</a></li>
+    <div class="dropdown">
+        <li><a>{{ name }}</a></li>
+        <div class="dropdown-content">
+        <ul>
+            <li><a href="/details">Account details</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+        </div>
+      </div>
     </ul>
     <div class="welcome-text">
         <h2>Welcome back </h2><h1>{{ name }}!!</h1>
-        <h3>Almost Done, Just Set your Questions and then your all set!</h3>
-        <a href="/setup">Set Questions</a>
+
     </div>
 </div>
 
