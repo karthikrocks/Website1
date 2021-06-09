@@ -58,7 +58,6 @@ def main_register():
                 if int(len(password)) != 0:
                     db.AddUser(username, email, password)
                     my_database.close()
-                    flash("Sign Up Successful!")
                     return redirect(url_for("setup"))
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
@@ -194,7 +193,7 @@ def setup():
     return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
-    if method == "POST":
+    if request.method == "POST":
         my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
                                           database="karthikDB")
         curser = my_database.cursor()
@@ -202,6 +201,9 @@ def forgot_password():
         a_2 = request.form["a_2"]
         a_3 = request.form["a_3"]
         UserID = db.GetUserId(session["email"])
+        sql1 = "SELECT FROM user_question_map WHERE userId=%(userid)s and Question_id=%(questionid)s"
+        
+    return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
         
 
 if __name__ == "__main__":
