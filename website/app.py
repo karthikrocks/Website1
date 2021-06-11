@@ -201,7 +201,7 @@ def forgot_password():
         a_2 = request.form["a_2"]
         a_3 = request.form["a_3"]
         UserID = db.GetUserId(session["email"])
-        sql1 = "SELECT FROM user_question_map WHERE userId=%(userid)s and Question_id=%(questionid)s"
+        sql1 = "SELECT Answer FROM user_question_map WHERE userId=%(userid)s and Question_id=%(questionid)s"
         
     return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
         
