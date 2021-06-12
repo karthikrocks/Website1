@@ -21,11 +21,11 @@ header {
 	float: left;
 	list-style: none;
 	margin-top: 50px;
+}
 .navabar {
     float: left;
 	list-style: none;
 	margin-top: 50px;
-}
 }
 .nav-area li {
 	display: inline-block;
@@ -90,9 +90,6 @@ header {
 		width: 50%;
 		text-align: center;
 		margin: auto;
-	}
-	img {
-		width: ;
 	}
 	.nav-area {
 		float: none;
@@ -206,3 +203,5 @@ button {
   .dropdown:hover .dropdown-content {
 	display: block;
   }
+
+  .dropdown-content a:hover {background-color: #f1f1f1}
