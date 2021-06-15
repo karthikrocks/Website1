@@ -4,6 +4,7 @@ from datetime import timedelta
 from DataBase.db import db
 from keys.key import encryptor
 import mysql.connector
+import hashlib
 app = Flask(__name__)
 key = encryptor.key_load(str('keys/key.key'))
 app.secret_key = key
@@ -56,7 +57,8 @@ def main_register():
         if int(len(username)) != 0:
             if int(len(email)) != 0:
                 if int(len(password)) != 0:
-                    db.AddUser(username, email, password)
+                    resultpass = hashlib.sha256(password.encode())
+                    db.AddUser(username, email, resultpass.hexdigest())
                     my_database.close()
                     return redirect(url_for("setup"))
     flash("Cannot Register with no details!")
@@ -75,7 +77,8 @@ def login():
     pwd = request.form["passwd"]
     curser = my_database.cursor(buffered=True)
     sql_code = "SELECT * FROM karthikdb.sign_up_info where username=%(user_name)s and passwd=%(password)s"
-    result = curser.execute(sql_code, {'user_name': name, 'password': pwd})
+    resultpassw = hashlib.sha256(pwd.encode())
+    result = curser.execute(sql_code, {'user_name': name, 'password': resultpassw.hexdigest()})
     cnt = curser.rowcount
     email = ""
     if cnt > 0:
