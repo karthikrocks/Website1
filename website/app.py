@@ -64,7 +64,7 @@ def main_register():
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
 
-
+# LOGIN
 @app.route('/login', methods=['POST'])
 def login():
     if "name" in session:
