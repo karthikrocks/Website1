@@ -203,9 +203,23 @@ def forgot_password():
         a_1 = request.form["a_1"]
         a_2 = request.form["a_2"]
         a_3 = request.form["a_3"]
-        UserID = db.GetUserId(session["email"])
-        sql1 = "SELECT Answer FROM user_question_map WHERE userId=%(userid)s and Question_id=%(questionid)s"
-        
+        if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0:     
+            if a_1 == db.GetAnswer('1', '61'):
+                if a_2 == db.GetAnswer('1', '62'):
+                    if a_3 == db.GetAnswer('1', '63'):
+                        flash("Password updated!")
+                        return redirect(url_for("main_register"))
+                    else:
+                        flash("Invalid Answers!")
+                        return redirect(url_for("main_register"))
+                else:
+                    flash("Invalid Answers!")
+                    return redirect(url_for("main_register"))
+            else:
+                flash("Invalid Answers!")
+                return redirect(url_for("main_register"))
+
+                        
     return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
         
 
