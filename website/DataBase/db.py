@@ -113,7 +113,15 @@ class DB():
         for x in result:
             r = x
         return str(r)
-
+    def GetAnswer(self, userid, question_id):
+        answer = ""
+        sql = "SELECT * FROM karthikdb.user_question_map where Question_id=%(Question_id)s and userId=%(userid)s"
+        curser.execute(sql, {"Question_id": question_id, "userid": userid})
+        result = curser.fetchall()
+        for x in result:
+            answer = x[2]
+        return answer
+        
     
 
 db = DB()
