@@ -1,7 +1,7 @@
 import math
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from datetime import timedelta
-from DataBase.db import db
+from DataBase.db import db, accountValid
 from keys.key import encryptor
 import mysql.connector
 import random
@@ -12,7 +12,7 @@ key = encryptor.key_load(str('keys/key.key'))
 app.secret_key = key
 app.permanent_session_lifetime = timedelta(hours=24)
 
-
+# emailValid function
 def emailValid():
     my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
                                           database="karthikDB")
@@ -147,12 +147,15 @@ def account():
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
         session["passw"] = passwd
-        old_passwd = request.form["o_pass"]
+        old_passwd = request.form["o_pass"] 
+        result_old_pass = hashlib.sha256(old_passwd.encode())
         password = db.GetPassword(session["email"])
+        
+        change_pass = hashlib.sha256(session["passw"].encode())
         if len(passwd) != 0 and len(c_passwd) != 0 and len(old_passwd) != 0:
             if passwd == c_passwd:
-                if old_passwd == password:
-                    db.ChangePassword(session["email"], session["passw"])
+                if result_old_pass.hexdigest() == password:
+                    db.ChangePassword(session["email"], change_pass.hexdigest())
                     session["pwd"] = session["passw"]
                     flash("Password Saved")
                     return redirect(url_for("home"))
@@ -199,36 +202,59 @@ def setup():
     return render_template('q-a.html', q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 
 
+@app.route('/enter_email', methods=['POST', 'GET'])
+def enter_email():
+    if request.method == 'POST':
+        email = request.form['email']
+        if accountValid(email):
+            if len(email) != 0:
+                session["user_email"] = email
+                return redirect(url_for("forgot_password"))
+            else:
+                return redirect(url_for("enter_email"))
+        else:
+            flash("Account not found! Please enter the correct email address or sign up as a new user!")
+            return redirect(url_for("main_register"))
+    return render_template('email_enter.html')
+
+
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
-    if request.method == "POST":
-        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                              database="karthikDB")
-        curser = my_database.cursor()
-        a_1 = request.form["a_1"]
-        a_2 = request.form["a_2"]
-        a_3 = request.form["a_3"]
-        if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0:
-            if a_1 == db.GetAnswer('1', '61'):
-                if a_2 == db.GetAnswer('1', '62'):
-                    if a_3 == db.GetAnswer('1', '63'):
-                        return redirect(url_for("main_register"))
+    if "user_email" in session:
+        if request.method == "POST":
+            my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
+                                                    database="karthikDB")
+            email = session["user_email"]
+            curser = my_database.cursor()
+            a_1 = request.form["a_1"]
+            a_2 = request.form["a_2"]
+            a_3 = request.form["a_3"]
+            userId = db.GetUserId(email)
+            if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0:
+                if a_1 == db.GetAnswer(userId, '61'):
+                    if a_2 == db.GetAnswer(userId, '62'):
+                        if a_3 == db.GetAnswer(userId, '63'):
+                            session["questions_correct"] = True
+                            return redirect(url_for("main_register")) # TODO - redirect to reset password page when all answers are correct 
+                        else:
+                            flash("Invalid Answers!")
+                            return redirect(url_for("main_register"))
                     else:
                         flash("Invalid Answers!")
                         return redirect(url_for("main_register"))
                 else:
                     flash("Invalid Answers!")
                     return redirect(url_for("main_register"))
-            else:
-                flash("Invalid Answers!")
-                return redirect(url_for("main_register"))
+    
+    else:
+        return redirect(url_for("enter_email"))
 
     return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 
-@app.route("/<secret>")
-def pass_reset():
-    # Reset Password
-    # Generate random url
-    return render_template("pass_reset.html")
+# @app.route("/reset<session>")
+# def pass_reset():
+#     # Reset Password
+#     # Generate random url
+#     return render_template("pass_reset.html")
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')
