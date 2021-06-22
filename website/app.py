@@ -251,10 +251,8 @@ def forgot_password():
 
     return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 
-# @app.route("/reset<session>")
-# def pass_reset():
-#     # Reset Password
-#     # Generate random url
-#     return render_template("pass_reset.html")
+@app.route("/reset")
+def pass_reset():
+    return render_template("pass_reset.html")
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')
