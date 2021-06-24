@@ -4,12 +4,12 @@ from datetime import timedelta
 from DataBase.db import db, accountValid
 from keys.key import encryptor
 import mysql.connector
+import pymongo
 import random
 import string
 import hashlib
 app = Flask(__name__)
-key = encryptor.key_load(str('keys/key.key'))
-app.secret_key = key
+app.secret_key = "secret"
 app.permanent_session_lifetime = timedelta(hours=24)
 
 # emailValid function
@@ -42,13 +42,10 @@ def main_register():
     username = request.form['u']
     email = request.form['em']
     password = request.form['pa']
-    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                          database="karthikDB")
     session["name"] = username
     session["email"] = email
     session["password"] = password
 
-    curser = my_database.cursor()
 
     if request.method == 'POST':
 
@@ -59,9 +56,12 @@ def main_register():
         if int(len(username)) != 0:
             if int(len(email)) != 0:
                 if int(len(password)) != 0:
+                    client = pymongo.MongoClient("mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true")
+                    db = client["DB"]
+                    mycol = db["users"]
                     resultpass = hashlib.sha256(password.encode())
-                    db.AddUser(username, email, resultpass.hexdigest())
-                    my_database.close()
+                    post = {"username": username, "email": email, "password": resultpass.hexdigest()}
+                    mycol.insert(post)
                     return redirect(url_for("setup"))
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
@@ -187,9 +187,6 @@ def setup():
         a_3 = request.form["a_3"]
         a_4 = request.form["a_4"]
 
-        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                              database="karthikDB")
-        curser = my_database.cursor()
 
         if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0 and len(a_4) != 0:
             db.AddAnswer(a_1, session["email"], "What is your Date of Birth?")

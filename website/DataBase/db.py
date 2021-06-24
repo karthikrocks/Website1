@@ -1,8 +1,11 @@
 import mysql.connector
+import pymongo
 
 my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
                                       database="karthikDB")
 curser = my_database.cursor(buffered=True)
+client = pymongo.MongoClient("mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true")
+
 
 """
 
@@ -65,47 +68,31 @@ class DB():
             print("Account not valid!")
 
     def ChangePassword(self, email, password):
-        if accountValid(email):
-            sql = "UPDATE karthikdb.sign_up_info SET passwd=%(passwd)s WHERE email=%(email)s"
-            curser.execute(sql, {"email": email, "passwd": password})
-            my_database.commit()
-            print("User changed")
-        else:
-            print("Account not valid!")
-
+        db = client["DB"]
+        mycol = db["users"]
+        mycol.update_one({"email": email}, {"$set": {"password": password}})
     def GetPassword(self, email):
-        if accountValid(email):
-            sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
-            curser.execute(sql, {"email": email})
-            myresult = curser.fetchall()
-            for x in myresult:
-                password = x[3]
-            return password
-        else:
-            print("Account not valid!")
+        db = client["DB"]
+        mycol = db["question"]
+        
 
     def GetQuestionId(self, question):
-        question_id = 0
-        sql = "SELECT Question_id FROM karthikdb.question where Question=%(question)s"
-        curser.execute(sql, {"question": question})
-        result = curser.fetchall()
-        for x in result:
-            question_id = x[0]
-        return question_id
+        db = client["DB"]
+        mycol = db["question"]
+        result = mycol.find_one({"Question": question}, {})
+        return result
     def GetUserId(self, email):
-        userID = 0
-        sql = "SELECT userId FROM karthikdb.sign_up_info where email=%(email)s"
-        curser.execute(sql, {"email": email})
-        result = curser.fetchall()
-        for x in result:
-            userID = x[0]
-        return userID
+        mydb = client["DB"]
+        mycolu = mydb["users"]
+        result = mycolu.find_one({"email": email}, {})
+        return result
     def AddAnswer(self, answer, email, question):
-        sql1 = "Insert into karthikdb.user_question_map(userId, Question_id, Answer) values(%(userId)s, %(Question_id)s, %(Answer)s)"
-        UserId = db.GetUserId(email)
-        Question_id = db.GetQuestionId(question)
-        curser.execute(sql1, {"userId": UserId, "Question_id": Question_id, "Answer": answer})
-        my_database.commit()
+        mydb = client["DB"]
+        mycol = mydb["user_question_map"]
+        userid = db.GetUserId(email)
+        questionid = db.GetQuestionId(question)
+        post = {"userId": userid, "Question_id": questionid, "Answer": answer}
+        mycol.insert(post)
     def GetQuestion(self, id):
         sql = "SELECT Question FROM karthikdb.question where Question_id=%(Question_id)s"
         curser.execute(sql, {"Question_id": id})
