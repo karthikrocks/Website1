@@ -3,27 +3,23 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from datetime import timedelta
 from DataBase.db import db, accountValid
 from keys.key import encryptor
-import mysql.connector
 import random
 import string
 import hashlib
+import uuid
+import json
+from flask_pymongo import PyMongo
 app = Flask(__name__)
-key = encryptor.key_load(str('keys/key.key'))
-app.secret_key = key
+app.secret_key = "secret"
 app.permanent_session_lifetime = timedelta(hours=24)
-
+app.config["MONGO_URI"] = "mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
+mongo = PyMongo(app)
 # emailValid function
-def emailValid():
-    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                          database="karthikDB")
-    email = request.form['em']
-    curser = my_database.cursor(buffered=True)
-    sql_code = "SELECT * FROM karthikdb.sign_up_info where email=%(email)s"
 
-    result = curser.execute(sql_code, {'email': email})
-    cnt = curser.rowcount
-    curser.close()
-    my_database.close()
+
+def emailValid():
+    email = request.form['em']
+    cnt = mongo.db.users.find({'email': email}).count()
     return cnt == 0
 
 
@@ -42,13 +38,9 @@ def main_register():
     username = request.form['u']
     email = request.form['em']
     password = request.form['pa']
-    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                          database="karthikDB")
     session["name"] = username
     session["email"] = email
     session["password"] = password
-
-    curser = my_database.cursor()
 
     if request.method == 'POST':
 
@@ -60,8 +52,10 @@ def main_register():
             if int(len(email)) != 0:
                 if int(len(password)) != 0:
                     resultpass = hashlib.sha256(password.encode())
-                    db.AddUser(username, email, resultpass.hexdigest())
-                    my_database.close()
+                    id = uuid.uuid1()
+                    post = {"_id": str(
+                        id), "username": username, "email": email, "password": resultpass.hexdigest()}
+                    mongo.db.users.insert(post)
                     return redirect(url_for("setup"))
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
@@ -74,30 +68,23 @@ def login():
     if "name" in session:
         name = session["name"]
         return redirect(url_for("home"))
-    my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                          database="karthikDB")
     session.permanent = True
     name = request.form["username"]
     pwd = request.form["passwd"]
-    curser = my_database.cursor(buffered=True)
-    sql_code = "SELECT * FROM karthikdb.sign_up_info where username=%(user_name)s and passwd=%(password)s"
     resultpassw = hashlib.sha256(pwd.encode())
-    result = curser.execute(
-        sql_code, {'user_name': name, 'password': resultpassw.hexdigest()})
-    cnt = curser.rowcount
-    email = ""
+    cnt = mongo.db.users.find(
+        {"username": name, "password": resultpassw.hexdigest()}).count()
     if cnt > 0:
-        res = curser.fetchone()
-        email = res[2]
-
-    curser.close()
-    my_database.close()
-
+        post = str(mongo.db.users.find_one({"username": name}, {
+                   "password": False, "username": False, "_id": False}))
+        r = eval(post)
+        session["email"] = r["email"]
     if cnt > 0:
+        t = db.getAccount("rishist@gmail.com")
+        print(t)
         session["logged_in"] = True
-        session["email"] = email
         session["name"] = name
-        session["pwd"] = pwd
+        session["password"] = pwd
         if "name" in session:
             name = session["name"]
             flash("Login Successful!")
@@ -146,17 +133,18 @@ def account():
     if request.method == 'POST':
         passwd = request.form["pass"]
         c_passwd = request.form["c_pass"]
-        session["passw"] = passwd
-        old_passwd = request.form["o_pass"] 
+        old_passwd = request.form["o_pass"]
         result_old_pass = hashlib.sha256(old_passwd.encode())
-        password = db.GetPassword(session["email"])
-        
-        change_pass = hashlib.sha256(session["passw"].encode())
+        passwr = session["password"]
+        password = hashlib.sha256(passwr.encode())
+
+        change_pass = hashlib.sha256(passwd.encode())
         if len(passwd) != 0 and len(c_passwd) != 0 and len(old_passwd) != 0:
             if passwd == c_passwd:
-                if result_old_pass.hexdigest() == password:
-                    db.ChangePassword(session["email"], change_pass.hexdigest())
-                    session["pwd"] = session["passw"]
+                if result_old_pass.hexdigest() == password.hexdigest():
+                    db.ChangePassword(
+                        session["email"], change_pass.hexdigest())
+                    session["password"] = passwd
                     flash("Password Saved")
                     return redirect(url_for("home"))
         if old_passwd != password:
@@ -187,10 +175,6 @@ def setup():
         a_3 = request.form["a_3"]
         a_4 = request.form["a_4"]
 
-        my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                              database="karthikDB")
-        curser = my_database.cursor()
-
         if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0 and len(a_4) != 0:
             db.AddAnswer(a_1, session["email"], "What is your Date of Birth?")
             db.AddAnswer(a_2, session["email"], "What is your fathers name?")
@@ -213,7 +197,8 @@ def enter_email():
             else:
                 return redirect(url_for("enter_email"))
         else:
-            flash("Account not found! Please enter the correct email address or sign up as a new user!")
+            flash(
+                "Account not found! Please enter the correct email address or sign up as a new user!")
             return redirect(url_for("main_register"))
     return render_template('email_enter.html')
 
@@ -222,20 +207,18 @@ def enter_email():
 def forgot_password():
     if "user_email" in session:
         if request.method == "POST":
-            my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                                    database="karthikDB")
             email = session["user_email"]
-            curser = my_database.cursor()
             a_1 = request.form["a_1"]
             a_2 = request.form["a_2"]
             a_3 = request.form["a_3"]
             userId = db.GetUserId(email)
             if len(a_1) != 0 and len(a_2) != 0 and len(a_3) != 0:
-                if a_1 == db.GetAnswer(userId, '61'):
-                    if a_2 == db.GetAnswer(userId, '62'):
-                        if a_3 == db.GetAnswer(userId, '63'):
+                if a_1 == db.GetAnswer(userId, '24684bfb-d558-11eb-93a0-c8b29b733f0b'):
+                    if a_2 == db.GetAnswer(userId, '153abe27-d568-11eb-b2bd-c8b29b733f0b'):
+                        if a_3 == db.GetAnswer(userId, '354e4020-d568-11eb-830d-c8b29b733f0b'):
                             session["questions_correct"] = True
-                            return redirect(url_for("main_register")) # TODO - redirect to reset password page when all answers are correct 
+                            # TODO - redirect to reset password page when all answers are correct
+                            return redirect(url_for("main_register"))
                         else:
                             flash("Invalid Answers!")
                             return redirect(url_for("main_register"))
@@ -245,16 +228,17 @@ def forgot_password():
                 else:
                     flash("Invalid Answers!")
                     return redirect(url_for("main_register"))
-    
+
     else:
         return redirect(url_for("enter_email"))
 
     return render_template("forgot_pass.html", q_1="What is your Date of Birth?", q_2="What is your fathers name?", q_3="What's your mothers name?", q_4="What's your School name?")
 
-# @app.route("/reset<session>")
-# def pass_reset():
-#     # Reset Password
-#     # Generate random url
-#     return render_template("pass_reset.html")
+
+@app.route("/reset")
+def pass_reset():
+    return render_template("pass_reset.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=1000, host='0.0.0.0')

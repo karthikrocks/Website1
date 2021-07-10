@@ -1,0 +1,12 @@
+{
+    "_id": 1,
+    "username": "test",
+    "email": {
+      "personal_email": "test@test.com",
+      "company_email": "company@test.com"   
+    },
+    "password": {
+      "passwd": "test",
+      "encrypted_passwd": "e264b8cb2ac2d087d67fb3c6e957bb9d0b47c486e81cc71c5f91c16407356b3e"
+    }  
+  }

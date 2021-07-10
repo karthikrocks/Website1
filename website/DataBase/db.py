@@ -1,8 +1,7 @@
-import mysql.connector
+import pymongo
 
-my_database = mysql.connector.connect(host="localhost", user="root", passwd="karthi@0709",
-                                      database="karthikDB")
-curser = my_database.cursor(buffered=True)
+client = pymongo.MongoClient("mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true")
+
 
 """
 
@@ -19,13 +18,12 @@ curser = my_database.cursor(buffered=True)
 
 
 def accountValid(email):
-    sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
-    result = curser.execute(sql, {"email": email})
-    cnt = curser.rowcount
+    db = client["DB"]
+    mycol = db["users"]
+    cnt = mycol.find({"email": email}).count()
     if cnt > 0:
         return True
-    else:
-        return False
+
 
 
 class DB():
@@ -36,95 +34,51 @@ class DB():
 
     def getAccount(self, email):
         if accountValid(email):
-            sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
-            curser.execute(sql, {"email": email})
-            myresult = curser.fetchall()
-
-            for x in myresult:
-                print("Id: ", x[0])
-                print("username: ", x[1])
-                print("email: ", x[2])
-                print("passwd: ", x[3])
-        else:
-            print("Account not valid!")
-
-    def AddUser(self, name, email, password):
-        sql = "Insert into sign_up_info(username, email, passwd) values(%(name)s, %(email)s, %(password)s)"
-        curser.execute(
-            sql, {"name": name, "email": email, "password": password})
-        my_database.commit()
-        print("User added!")
-
-    def DeleteUser(self, email):
-        if accountValid(email):
-            sql = "DELETE FROM sign_up_info WHERE email=%(email)s"
-            curser.execute(sql, {"email": email})
-            my_database.commit()
-            print("User deleted!")
+            db = client["DB"]
+            mycol = db["users"]
+            _id = str(mycol.find_one({"email": email}, {"email": False, "password": False, "username": False}))
+            email = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "username": False}))
+            username = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "email": False}))
+            password = str(mycol.find_one({"email": email}, {"_id": False, "email": False, "username": False}))
+            return {"_id": eval(_id), "username": eval(username), "email": eval(email), "password": eval(password)}       
         else:
             print("Account not valid!")
 
     def ChangePassword(self, email, password):
-        if accountValid(email):
-            sql = "UPDATE karthikdb.sign_up_info SET passwd=%(passwd)s WHERE email=%(email)s"
-            curser.execute(sql, {"email": email, "passwd": password})
-            my_database.commit()
-            print("User changed")
-        else:
-            print("Account not valid!")
-
-    def GetPassword(self, email):
-        if accountValid(email):
-            sql = "SELECT * FROM karthikdb.sign_up_info WHERE email=%(email)s"
-            curser.execute(sql, {"email": email})
-            myresult = curser.fetchall()
-            for x in myresult:
-                password = x[3]
-            return password
-        else:
-            print("Account not valid!")
+        db = client["DB"]
+        mycol = db["users"]
+        mycol.update_one({"email": email}, {"$set": {"password": password}})
 
     def GetQuestionId(self, question):
-        question_id = 0
-        sql = "SELECT Question_id FROM karthikdb.question where Question=%(question)s"
-        curser.execute(sql, {"question": question})
-        result = curser.fetchall()
-        for x in result:
-            question_id = x[0]
-        return question_id
+        db = client["DB"]
+        mycol = db["question"]
+        result = str(mycol.find_one({"Question": question}, {}))
+        r = eval(result)
+        return r["_id"]
     def GetUserId(self, email):
-        userID = 0
-        sql = "SELECT userId FROM karthikdb.sign_up_info where email=%(email)s"
-        curser.execute(sql, {"email": email})
-        result = curser.fetchall()
-        for x in result:
-            userID = x[0]
-        return userID
+        mydb = client["DB"]
+        mycolu = mydb["users"]
+        result = str(mycolu.find_one({"email": email}, {}))
+        r = eval(result)
+        return r["_id"]
     def AddAnswer(self, answer, email, question):
-        sql1 = "Insert into karthikdb.user_question_map(userId, Question_id, Answer) values(%(userId)s, %(Question_id)s, %(Answer)s)"
-        UserId = db.GetUserId(email)
-        Question_id = db.GetQuestionId(question)
-        curser.execute(sql1, {"userId": UserId, "Question_id": Question_id, "Answer": answer})
-        my_database.commit()
-    def GetQuestion(self, id):
-        sql = "SELECT Question FROM karthikdb.question where Question_id=%(Question_id)s"
-        curser.execute(sql, {"Question_id": id})
-        result = curser.fetchall()
-        for x in result:
-            r = x
-        return str(r)
+        mydb = client["DB"]
+        mycol = mydb["user_question_map"]
+        userid = db.GetUserId(email)
+        questionid = db.GetQuestionId(question)
+        post = {"userId": userid, "Question_id": questionid, "Answer": answer}
+        mycol.insert(post)
     def GetAnswer(self, userid, question_id):
-        answer = ""
-        sql = "SELECT * FROM karthikdb.user_question_map where Question_id=%(Question_id)s and userId=%(userid)s"
-        curser.execute(sql, {"Question_id": question_id, "userid": userid})
-        result = curser.fetchall()
-        for x in result:
-            answer = x[2]
-        return answer
+        mydb = client["DB"]
+        mycol = mydb["user_question_map"]
+        answer = str(mycol.find_one({"userId": userid, "Question_id": question_id}, {"userId": False, "Question_id": False, "_id": False}))
+        r = eval(answer)
+        return r["Answer"]
+
         
     
 
-db = DB()
+db = DB()   
 # # Driver Code....
 # db.getAccount("test@test.com")
 # db.AddUser("karthik", "karthik@kar", "1123")
@@ -134,4 +88,4 @@ db = DB()
 # db.AddAnswer("dwedewd", "test@test.com", "dwefer")    
 # db.GetQuestions(61)
 # db.GetQuestionId("What is your Date of Birth?")
-# db.GetAnswer1('2')
+# db.GetAnswer('a23527b7-d5a8-11eb-92e5-c8b29b733f0b', '24684bfb-d558-11eb-93a0-c8b29b733f0b')

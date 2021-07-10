@@ -18,7 +18,7 @@ body{
   background: #d43f8d;
 }
 .container{
-  width: 340px;
+  width: 340px; /* TODO : width 400*/
   background: #fff;
   text-align: center;
   border-radius: 5px;
