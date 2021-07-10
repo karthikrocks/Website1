@@ -39,6 +39,7 @@ header {
 	text-transform: uppercase;
 }
 .nav-area li a:hover {
+
 	color: blue;
 }
 
