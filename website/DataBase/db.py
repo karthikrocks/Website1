@@ -24,6 +24,13 @@ def accountValid(email):
     if cnt > 0:
         return True
 
+def accountValidWithUID(uid):
+    db = client["DB"]
+    mycol = db["users"]
+    cnt = mycol.find({"_id": uid}).count()
+    if cnt > 0:
+        return True
+
 
 
 class DB():
@@ -40,7 +47,7 @@ class DB():
             email = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "username": False}))
             username = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "email": False}))
             password = str(mycol.find_one({"email": email}, {"_id": False, "email": False, "username": False}))
-            return {"_id": eval(_id), "username": eval(username), "email": eval(email), "password": eval(password)}       
+            return {"_id": eval(_id), "username": eval(username), "email": eval(email), "password": eval(password)}
         else:
             print("Account not valid!")
 
@@ -75,17 +82,17 @@ class DB():
         r = eval(answer)
         return r["Answer"]
 
-        
-    
 
-db = DB()   
+
+
+db = DB()
 # # Driver Code....
 # db.getAccount("test@test.com")
 # db.AddUser("karthik", "karthik@kar", "1123")
 # db.DeleteUser("karthik@kar")
 # db.GetPassword("test@test.com")
 # db.ChangePassword("test@test.com", "test")
-# db.AddAnswer("dwedewd", "test@test.com", "dwefer")    
+# db.AddAnswer("dwedewd", "test@test.com", "dwefer")
 # db.GetQuestions(61)
 # db.GetQuestionId("What is your Date of Birth?")
 # db.GetAnswer('a23527b7-d5a8-11eb-92e5-c8b29b733f0b', '24684bfb-d558-11eb-93a0-c8b29b733f0b')

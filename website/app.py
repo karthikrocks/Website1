@@ -1,7 +1,7 @@
 import math
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from datetime import timedelta
-from DataBase.db import db, accountValid
+from DataBase.db import db, accountValid, accountValidWithUID
 from keys.key import encryptor
 import random
 import string
@@ -9,13 +9,26 @@ import hashlib
 import uuid
 import json
 from flask_pymongo import PyMongo
+from Exceptions import RedirectException
 app = Flask(__name__)
 app.secret_key = "secret"
 app.permanent_session_lifetime = timedelta(hours=24)
 app.config["MONGO_URI"] = "mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
 mongo = PyMongo(app)
-# emailValid function
 
+@app.route('/getAccount/<uid>')
+def getAccount(uid):
+    if accountValidWithUID(uid):
+        user = mongo.db.users.find_one({"_id": uid})
+        return user
+    else:
+        return {"message": "No user found with uid: " + uid, "Exception": "USER_NOT_FOUND", "status": 404}
+
+@app.errorhandler(RedirectException)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 def emailValid():
     email = request.form['em']
@@ -101,7 +114,10 @@ def login():
 def home():
     if "name" in session:
         name = session['name']
-        return render_template('home.html', name=name)
+        try:
+            return render_template('Home/hsome.html', name=name)
+        except Exception as e:
+            raise RedirectException('Error in Redirecting, Error in file : ' + str(e), status_code=410)
     else:
         return render_template("my_home.html")
 
