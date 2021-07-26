@@ -16,13 +16,13 @@ app.permanent_session_lifetime = timedelta(hours=24)
 app.config["MONGO_URI"] = "mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb.net/DB?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
 mongo = PyMongo(app)
 
-@app.route('/getAccount/<uid>')
+@app.route('/getAccount/userId=<uid>')
 def getAccount(uid):
     if accountValidWithUID(uid):
         user = mongo.db.users.find_one({"_id": uid})
         return user
     else:
-        return {"message": "No user found with uid: " + uid, "Exception": "USER_NOT_FOUND", "status": 404}
+        return {"message": "No user found with uid: " + uid, "Exception": "USER_NOT_FOUND"}, 404
 
 @app.errorhandler(RedirectException)
 def handle_invalid_usage(error):

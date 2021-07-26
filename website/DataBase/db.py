@@ -34,23 +34,6 @@ def accountValidWithUID(uid):
 
 
 class DB():
-    # def __init__(self, name, email, password):
-    #     self.name = name
-    #     self.email = email
-    #     self.password = password
-
-    def getAccount(self, email):
-        if accountValid(email):
-            db = client["DB"]
-            mycol = db["users"]
-            _id = str(mycol.find_one({"email": email}, {"email": False, "password": False, "username": False}))
-            email = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "username": False}))
-            username = str(mycol.find_one({"email": email}, {"_id": False, "password": False, "email": False}))
-            password = str(mycol.find_one({"email": email}, {"_id": False, "email": False, "username": False}))
-            return {"_id": eval(_id), "username": eval(username), "email": eval(email), "password": eval(password)}
-        else:
-            print("Account not valid!")
-
     def ChangePassword(self, email, password):
         db = client["DB"]
         mycol = db["users"]
@@ -81,18 +64,11 @@ class DB():
         answer = str(mycol.find_one({"userId": userid, "Question_id": question_id}, {"userId": False, "Question_id": False, "_id": False}))
         r = eval(answer)
         return r["Answer"]
-
+    def GetQuestion(answer):
+        mydb = client["DB"]
+        mycol = mydb["user_question_map"]
+        question = str(mycol.find_one({"answer": answer}))
 
 
 
 db = DB()
-# # Driver Code....
-# db.getAccount("test@test.com")
-# db.AddUser("karthik", "karthik@kar", "1123")
-# db.DeleteUser("karthik@kar")
-# db.GetPassword("test@test.com")
-# db.ChangePassword("test@test.com", "test")
-# db.AddAnswer("dwedewd", "test@test.com", "dwefer")
-# db.GetQuestions(61)
-# db.GetQuestionId("What is your Date of Birth?")
-# db.GetAnswer('a23527b7-d5a8-11eb-92e5-c8b29b733f0b', '24684bfb-d558-11eb-93a0-c8b29b733f0b')
