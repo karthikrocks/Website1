@@ -16,6 +16,14 @@ client = pymongo.MongoClient("mongodb+srv://Karthik:rishi@cluster0.uj94w.mongodb
 
 """
 
+"""
+[] = database -> connection - host-"localhost", user-"root", password-***** (
+    accountValid -> tells whether account is valid using 'email' of the user
+    accountValidWithUID -> tells whether account is valid using 'UID' of the user
+)
+
+"""
+
 
 def accountValid(email):
     db = client["DB"]

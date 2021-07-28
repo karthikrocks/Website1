@@ -22,7 +22,12 @@ def getAccount(uid):
         user = mongo.db.users.find_one({"_id": uid})
         return user
     else:
-        return {"message": "No user found with uid: " + uid, "Exception": "USER_NOT_FOUND"}, 404
+        #Trowing 404 not found Exception
+        return {
+            "message": f"No user found with uid: {uid}",
+            "Exception": "USER_NOT_FOUND",
+            "status": 404
+            }, 404
 
 @app.errorhandler(RedirectException)
 def handle_invalid_usage(error):
@@ -73,8 +78,6 @@ def main_register():
     flash("Cannot Register with no details!")
     return redirect(url_for("main_register"))
 
-# LOGIN
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -93,8 +96,6 @@ def login():
         r = eval(post)
         session["email"] = r["email"]
     if cnt > 0:
-        t = db.getAccount("rishist@gmail.com")
-        print(t)
         session["logged_in"] = True
         session["name"] = name
         session["password"] = pwd
@@ -115,11 +116,18 @@ def home():
     if "name" in session:
         name = session['name']
         try:
-            return render_template('Home/hsome.html', name=name)
+            # return render_template('account.html', name=name)
+            return {
+                "message": "Redirecting Successful",
+                "Name": name
+            }
         except Exception as e:
             raise RedirectException('Error in Redirecting, Error in file : ' + str(e), status_code=410)
     else:
-        return render_template("my_home.html")
+        # return render_template("my_home.html")
+        return {
+            "message": "User not logged in, Redirecting to non-authorized home-page"
+        }
 
 
 @app.route('/logout')
@@ -127,8 +135,11 @@ def logout():
     session.pop("name", None)
     session.pop("pwd", None)
     session.clear()
-    flash(" You have been logged out")
-    return redirect(url_for('main_register'))
+    # flash(" You have been logged out")
+    # return redirect(url_for('main_register'))
+    return {
+        "message": "Current user has been logged out"
+    }
 
 
 @app.after_request
@@ -161,11 +172,18 @@ def account():
                     db.ChangePassword(
                         session["email"], change_pass.hexdigest())
                     session["password"] = passwd
-                    flash("Password Saved")
-                    return redirect(url_for("home"))
+                    # flash("Password Saved")
+                    # return redirect(url_for("home"))
+                    return {
+                        "message": "password Svaed in DB"
+                    }
         if old_passwd != password:
-            flash("Old Password Incorrect")
-            return redirect(url_for("home"))
+            # flash("Old Password Incorrect")
+            # return redirect(url_for("home"))
+            return {
+                "message": "Old password Incorrect, Please check your old passsword",
+                "status": 401
+            }, 401
 
     if "name" in session:
         return render_template("account.html", username=session["name"], email=session["email"])
