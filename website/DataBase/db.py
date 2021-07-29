@@ -77,6 +77,4 @@ class DB():
         mycol = mydb["user_question_map"]
         question = str(mycol.find_one({"answer": answer}))
 
-
-
 db = DB()
